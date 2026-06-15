@@ -9,23 +9,29 @@ import { rejectInviteHandler } from './handlers/reject-invite';
 import { leaveGameHandler } from './handlers/leave-game';
 import { gameMoveHandler } from './handlers/game-move';
 
-export const handleClientMsg = (engine: Engine, msg: TClientMsg, ws: WebSocket, clients: Map<string, WebSocket>, currentUser?: User) => {
+export const handleClientMsg = (engine: Engine, msg: TClientMsg, ws: WebSocket) => {
 	if(msg.type === IMessageType.SET_USERNAME) {
-		setUsernameHandler(engine, ws, msg, clients);
+		setUsernameHandler(engine, ws, msg);
+		return
 	}
 	if(msg.type === IMessageType.CREATE_GAME) {
-		createGameHandler(engine, ws, msg, clients, currentUser);
+		createGameHandler(engine, ws, msg);
+		return
 	}
 	if(msg.type === IMessageType.ACCEPT_INVITE) {
-		acceptInviteHandler(engine, ws, msg, clients, currentUser);
+		acceptInviteHandler(engine, ws, msg);
+		return
 	}
 	if(msg.type === IMessageType.REJ_INVITE) {
-		rejectInviteHandler(engine, ws, msg, clients, currentUser);
+		rejectInviteHandler(engine, ws, msg);
+		return
 	};
 	if(msg.type === IMessageType.LEAVE_GAME) {
-		leaveGameHandler(engine, ws, msg, clients, currentUser);
+		leaveGameHandler(engine, ws, msg);
+		return
 	}
 	if(msg.type === IMessageType.GAME_MOVE) {
-		gameMoveHandler(engine, ws, msg, clients, currentUser);
+		gameMoveHandler(engine, ws, msg);
+		return
 	}
 }

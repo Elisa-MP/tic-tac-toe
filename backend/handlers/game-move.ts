@@ -1,47 +1,43 @@
-import { IGameMove, IMessageType } from "../../types/protocol";
+import { IGameMove } from "../../types/protocol";
 import { Engine } from "../engine";
 import type { WebSocket } from 'ws';
-import { genMsg } from "../../util/genMsg";
-import { User } from "../user";
+import { updateBoard } from "../messages/update-board";
+import { rej } from "../messages/rej";
+import { backendState } from "../state";
 
-export const gameMoveHandler = (engine: Engine, ws: WebSocket, msg: IGameMove, clients: Map<string, WebSocket>, currentUser?: User) => {
-	const game = engine.getGame(msg.payload.gameId);
+export const gameMoveHandler = (engine: Engine, ws: WebSocket, msg: IGameMove) => {
+	
+	const { gameId, field } = msg.payload
+	
+	const game = engine.getGame(gameId);
 
 	if (!game) {
-		ws.send(genMsg({
-			id: crypto.randomUUID(),
-			type: IMessageType.REJ,
-			payload: {
-				reqId: msg.id,
-				error: "Game not found"
-			}
-		}));
+		rej(ws, msg.id, 'game-not-found')
 		return;
 	}
 
+	const currentUser = backendState.users.get(ws);
+
 	if (game.activePlayer.id !== currentUser?.id) {
-		ws.send(genMsg({
-			id: crypto.randomUUID(),
-			type: IMessageType.REJ,
-			payload: {
-				reqId: msg.id,
-				error: "Not your turn"
-			}
-		}));
+		rej(ws, msg.id, 'not-your-turn')
 		return;
 	}	
 
-	const gameDO = game.move(currentUser, msg.payload.field);
+	try {
+		game.move(currentUser, field)
+	} catch(e) {
+		rej(ws, msg.id, `${e}`)
+		return;
+	}
 
-	const players = [clients.get(game.p1.getConnectionId()), clients.get(game.p2.getConnectionId())];	
+	const players = [
+		backendState.clients.get(game.p1.getConnectionId()), 
+		backendState.clients.get(game.p2.getConnectionId())
+	];
 
-	if (gameDO) {
-		players.forEach(p => p?.send(genMsg({
-			id: crypto.randomUUID(),
-			type: IMessageType.UPDATE_BOARD,	
-			payload: {
-				game: gameDO,
-			}
-		})));
-	};
+
+	players.forEach(p => {
+		if(p) updateBoard(p, game)
+	});
 }
+

@@ -5,7 +5,8 @@ import { setUsername } from '@/services/messages/set-username';
 
 const username = ref('');
 
-const login = () => {
+const login = (e: SubmitEvent) => {
+	e.preventDefault();
   if (!username.value.trim()) return
   setUsername(username.value.trim())
 }
@@ -13,11 +14,13 @@ const login = () => {
 </script>
 
 <template>
-	<input v-model="username" />
+	<form @submit="login">
+		<input v-model="username" />
 
-	<button
-		@click="login"
-	>
-		Verbinden
-	</button>
+		<button
+			type="submit"
+		>
+			Verbinden
+		</button>
+	</form>
 </template>

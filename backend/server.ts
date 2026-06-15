@@ -1,9 +1,11 @@
-import { WebSocket, WebSocketServer } from 'ws';
+import { WebSocketServer } from 'ws';
 import { Engine } from './engine';
 import { User } from './user';
 import { genMsg } from '../util/genMsg';
 import { IMessageType, TClientMsg, type TServerMsg } from '../types/protocol';
-import { handleClientMsg } from './msgHandler';
+import { handleClientMsg } from './msg-handler';
+import { backendState } from './state';
+import { welcome } from './messages/welcome';
 
 const port = 8080;
 
@@ -13,13 +15,7 @@ const wss = new WebSocketServer({
 
 const engine = new Engine();
 
-const clients = new Map<string, WebSocket>();
-
-// export const sendToUser = (userId: string, msg: TServerMsg) => {
-//   clients.get(userId)?.send(
-//     genMsg(msg)
-//   );
-// }
+const clients = backendState.clients;
 
 engine.on('lobby-updated', payload => {
   console.log(clients)
@@ -29,19 +25,11 @@ engine.on('lobby-updated', payload => {
 });
 
 wss.on('connection', ws => {
-  ws.send(genMsg({
-    id: crypto.randomUUID(),
-    type: IMessageType.WELCOME,
-    payload: {
-      msg: 'Welcome to the game!',
-      connectionId: crypto.randomUUID(),
-    }
-  }));
+  welcome(ws);
 
   ws.on('message', data => {
     const msg = JSON.parse(data.toString()) as TClientMsg;
-    const currentUser = (ws as any).user as User | undefined;
-    handleClientMsg(engine, msg, ws, clients, currentUser);
+    handleClientMsg(engine, msg, ws);
   });
 
   ws.on('close', () => {
@@ -50,7 +38,6 @@ wss.on('connection', ws => {
       return;
     }
 
-    // clients map uses connectionId as key (set in set-username handler)
     clients.delete(user.connectionId);
 
     setTimeout(() => {

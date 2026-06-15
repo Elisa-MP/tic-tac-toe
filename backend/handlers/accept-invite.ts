@@ -1,49 +1,27 @@
 import { Engine } from "../engine";
 import type { WebSocket } from 'ws';
-import { genMsg } from "../../util/genMsg";
-import { User } from "../user";
-import { IAcceptInvite, IMessageType } from "../../types/protocol";
+import { IAcceptInvite } from "../../types/protocol";
+import { rej } from "../messages/rej";
+import { backendState } from "../state";
+import { gameStart } from "../messages/game-start";
 
-export const acceptInviteHandler = (engine: Engine, ws: WebSocket, msg: IAcceptInvite, clients: Map<string, WebSocket>, currentUser?: User) => {
+export const acceptInviteHandler = (engine: Engine, ws: WebSocket, msg: IAcceptInvite) => {
 	const game = engine.getGame(msg.payload.gameId);
 
 	if (!game) {
-		ws.send(genMsg({
-			id: crypto.randomUUID(),
-			type: IMessageType.REJ,
-			payload: {
-				reqId: msg.id,
-				error: "Game not found"
-			}
-		}));
+		rej(ws, msg.id, 'game-not-found')
 		return;
 	}
 
 	engine.startGame(game);
 
-	const players = [clients.get(game.p1.getConnectionId()), clients.get(game.p2.getConnectionId())];
+	const players = [
+		backendState.clients.get(game.p1.getConnectionId()), 
+		backendState.clients.get(game.p2.getConnectionId())
+	];
 
-	players.forEach(p => p?.send(genMsg({
-		id: crypto.randomUUID(),
-		type: IMessageType.GAME_START,
-		payload: {
-			game: {
-				id: game.id,
-				p1: {
-					id: game.p1.id,
-					name: game.p1.name,
-					status: game.p1.status
-				},
-				p2: {
-					id: game.p2.id,
-					name: game.p2.name,
-					status: game.p2.status
-				},
-				status: game.status,
-				activePlayerId: game.activePlayer.id,
-				board: game.getBoard(),
-				winner: game.winner,
-			}
-		}
-	})));
+
+	players.forEach(p => {
+		if(p) gameStart(p, game)
+	});
 }

@@ -11,32 +11,36 @@ import { welcomeHandler } from "./handlers/welcome";
 
 
 export const handleServerMsg = (msg: TServerMsg, ws: WebSocket) => {
-	switch (msg.type) {
-		case IMessageType.WELCOME:
-			welcomeHandler(msg);
-			break;
-		case IMessageType.ACK:
-			ackHandler(msg);
-			break;
-		case IMessageType.REJ:
-			rejHandler(msg);
-			break;
-		case IMessageType.UPDATE_LOBBY:
-			updateLobbyHandler(msg);
-			break;
-		case IMessageType.GAME_INVITE:
-			gameInviteHandler(msg);
-			break;
-		case IMessageType.GAME_START:
-			gameStartHandler(msg);
-			break;
-		case IMessageType.UPDATE_BOARD:
-			updateBoardHandler(msg);
-			break;
-		case IMessageType.OPP_LEFT_GAME:
-			oppLeftGameHandler(msg);
-			break;
-		default:
-			console.log('Unknown message type:', msg);
+	if(msg.type === IMessageType.WELCOME) {
+		welcomeHandler(msg);
+		return
+	}
+	if(msg.type === IMessageType.ACK) {
+		ackHandler(msg);
+		return
+	}
+	if(msg.type === IMessageType.REJ) {	
+		rejHandler(msg);
+		return;
+	}
+	if(msg.type === IMessageType.UPDATE_LOBBY) {
+		updateLobbyHandler(msg);
+		return
+	}
+	if(msg.type === IMessageType.GAME_INVITE) {
+		gameInviteHandler(msg);
+		return
+	}
+	if(msg.type === IMessageType.GAME_START) {
+		gameStartHandler(msg);
+		return
+	}
+	if(msg.type === IMessageType.UPDATE_BOARD) {
+		updateBoardHandler(msg);
+		return
+	}
+	if(msg.type === IMessageType.OPP_LEFT_GAME) {
+		oppLeftGameHandler(msg);
+		return
 	}
 }

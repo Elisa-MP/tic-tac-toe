@@ -1,70 +1,36 @@
-import { ICreateGame, IMessageType } from "../../types/protocol";
+import { ICreateGame } from "../../types/protocol";
 import { Engine } from "../engine";
 import type { WebSocket } from 'ws';
-import { genMsg } from "../../util/genMsg";
-import { User } from "../user";
+import { backendState } from "../state";
+import { rej } from "../messages/rej";
+import { gameInvite } from "../messages/game-invite";
 
-export const createGameHandler = (engine: Engine, ws: WebSocket, msg: ICreateGame, clients: Map<string, WebSocket>, currentUser?: User) => {
+export const createGameHandler = (engine: Engine, ws: WebSocket, msg: ICreateGame) => {
+	
+	const currentUser = backendState.users.get(ws);
+	
 	if (!currentUser) {
-		ws.send(genMsg({
-			id: crypto.randomUUID(),
-			type: IMessageType.REJ,
-			payload: {
-				reqId: msg.id,
-				error: 'undefined-user'
-			}
-		}));
+		rej(ws, msg.id, 'undefined-user');
 		return;
 	}
 
 	const opponent = engine.getUserById(msg.payload.opponentId);
 	if (!opponent) {
-		ws.send(genMsg({
-			id: crypto.randomUUID(),
-			type: IMessageType.REJ,
-			payload: {
-				reqId: msg.id,
-				error: 'opponent-not-found'
-			}
-		}));
+		rej(ws, msg.id, 'opponent-not-found');
 		return;
 	}
 
-	console.log(opponent)
-	console.log('CREATE G OPP CONN ID', opponent.getConnectionId())
-	console.log(clients.keys())
-	console.log(clients.get(opponent.getConnectionId()) !== undefined)
-
 	if(currentUser.status === 'active' && opponent.status === 'active') {
 		const game = engine.createGame(currentUser, opponent);
-		const oppWs = clients.get(opponent.getConnectionId());
+		const oppWs = backendState.clients.get(opponent.connectionId);
+
 		if (!oppWs) {
-			ws.send(genMsg({
-				id: crypto.randomUUID(),
-				type: IMessageType.REJ,
-				payload: {
-					reqId: msg.id,
-					error: 'opponent-disconnected'
-				}
-			}));
+			rej(ws, msg.id, 'opponent-disconnected');
 			return;
 		}
-		oppWs.send(genMsg({
-			id: crypto.randomUUID(),
-			type: IMessageType.GAME_INVITE,
-			payload: {
-				game: game.getGameDO(),
-			}
-		}));
+		gameInvite(oppWs, game)
+
 	} else {
-		ws.send(genMsg({
-			id: crypto.randomUUID(),
-			type: IMessageType.REJ,
-			payload: {
-				reqId: msg.id,
-				error: 'user-busy'
-			}
-		}));
-		return;
+		rej(ws, msg.id, 'user-busy')
 	}
 }

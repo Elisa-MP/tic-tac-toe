@@ -1,5 +1,4 @@
-import { GameStatus, Winner } from "../types/backend";
-import { GameDO, Marker } from "../types/shared";
+import { GameDO, GameStatus, Marker, Winner } from "../types/shared";
 import { Board } from "./board";
 import { User } from "./user";
 
@@ -68,22 +67,19 @@ export class Game {
 
     if (this.moves >= 5 && this.board.checkWin()) {
       this.winner = player;
+      this.status = 'complete';
     }
 
     if (this.moves === 9) {
       this.winner = 'Unentschieden';
+      this.status = 'complete';
     }
 
     this.switchPlayer();
-    return this.getGameDO();
   }
 
 	cancel(): void {
     this.status = 'cancled';
-  }
-
-  private finish(): void {
-    this.status = 'complete';
   }
 
   private switchPlayer(): void {
@@ -119,5 +115,9 @@ export class Game {
       activePlayerId: this.activePlayer.id,
       winner: this.winner,
     }
+  }
+
+  toJSON() {
+    return this.getGameDO();
   }
 }

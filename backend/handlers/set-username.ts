@@ -1,50 +1,29 @@
 import type { WebSocket } from 'ws';
-import { genMsg } from "../../util/genMsg";
-import { IMessageType, ISetUsername, TServerMsg } from "../../types/protocol";
+import { ISetUsername } from "../../types/protocol";
 import { Engine } from "../engine";
 import { User } from "../user";
+import { backendState } from '../state';
+import { rej } from '../messages/rej'
+import { ack } from '../messages/ack'
 
-export const setUsernameHandler = (engine: Engine, ws: WebSocket, msg: ISetUsername, clients: Map<string, WebSocket>) => {
+export const setUsernameHandler = (engine: Engine, ws: WebSocket, msg: ISetUsername) => {
 	const username = msg.payload.username?.trim();
 
 	if (!username) {
-    ws.send(genMsg({
-      id: crypto.randomUUID(),
-      type: IMessageType.REJ,
-      payload: {
-        reqId: msg.id,
-        error: 'username-required'
-      }
-    }));
+    rej(ws, msg.id, 'username-required')
     return;
   }
 
 	if (engine.getUserByName(username)) {
-    ws.send(genMsg({
-      id: crypto.randomUUID(),
-      type: IMessageType.REJ,
-      payload: {
-        reqId: msg.id,
-        error: 'duplicate-user'
-      }
-    }));
+    rej(ws, msg.id, 'duplicate-user')
     return;
   }
 
 	const user = new User(username, msg.payload.connectionId);
-  clients.set(user.getConnectionId(), ws);
-  console.log('ADDING CLIENT', user.getConnectionId())
+
+  backendState.clients.set(user.getConnectionId(), ws);
+  backendState.users.set(ws, user);
   engine.addUser(user);
 
-  (ws as any).user = user;
-
-  ws.send(genMsg({
-    id: msg.id,
-    type: IMessageType.ACK,
-    payload: {
-      reqId: msg.id,
-      message: `Welcome ${user.name}!`,
-      userId: user.id
-    }
-  }));
+  ack(ws, msg.id, `Welcome ${user.name}!`, user.id)
 };

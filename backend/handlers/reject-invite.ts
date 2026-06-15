@@ -1,23 +1,27 @@
 import { Engine } from "../engine";
 import type { WebSocket } from 'ws';
-import { genMsg } from "../../util/genMsg";
-import { User } from "../user";
-import { IMessageType, IRejectInvite } from "../../types/protocol";
+import { IRejectInvite } from "../../types/protocol";
+import { backendState } from "../state";
+import { rej } from "../messages/rej";
 
-export const rejectInviteHandler = (engine: Engine, ws: WebSocket, msg: IRejectInvite, clients: Map<string, WebSocket>, currentUser?: User) => {
+export const rejectInviteHandler = (engine: Engine, ws: WebSocket, msg: IRejectInvite) => {
 	const game = engine.getGame(msg.payload.gameId);
 
 	if (!game) return;
 	engine.cancelGame(game);
 
+	const currentUser = backendState.users.get(ws);
+	
 	const opponentId = game.p1.id === currentUser?.id ? game.p2.id : game.p1.id;
-	const opponent = engine.users.get(opponentId)
-	clients.get(opponent.getConnectionId())?.send(genMsg({
-		id: crypto.randomUUID(),
-		type: IMessageType.REJ,
-		payload: {
-			reqId: msg.id, // TODO: save id of invite message and use it here
-			error: "Game invite rejected"
-		}
-	}));
+	const opponent = engine.getUserById(opponentId);
+
+	if(!opponent) return;
+
+	const opponentWs = backendState.clients.get(opponent?.connectionId);
+
+	if(!opponentWs) return;
+	
+	rej(opponentWs, msg.id, 'Game invite rejected')
+
+	// TODO: save id of invite message and use it here
 }
