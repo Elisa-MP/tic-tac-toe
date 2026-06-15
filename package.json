@@ -1,0 +1,21 @@
+{
+  "name": "tic-tac-toe",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "main": "main.js",
+  "scripts": {
+    "start_backend": "tsx watch backend/server.ts"
+  },
+  "dependencies": {
+    "@nanostores/vue": "^1.1.0",
+    "nanostores": "^1.3.0",
+    "typescript": "^6.0.3",
+    "ws": "^8.21.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.3",
+    "@types/ws": "^8.18.1",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.22.4"
+  }
+}
