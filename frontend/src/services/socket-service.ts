@@ -6,7 +6,7 @@ class SocketService implements SocketService {
 
   connect() {
     this.ws = new WebSocket(
-      'ws://localhost:8080'
+      'wss://api.tictactoe.pircher.tech'
     );
 
     this.ws.onopen = () => {

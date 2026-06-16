@@ -4,8 +4,9 @@
   "type": "commonjs",
   "main": "main.js",
   "scripts": {
-    "start_backend": "tsx --watch backend/server.ts",
-    "tsx": "tsx"
+    "dev": "tsx --watch backend/server.ts",
+    "tsx": "tsx",
+    "start_backend": "tsx backend/server.ts"
   },
   "dependencies": {
     "@nanostores/vue": "^1.1.0",

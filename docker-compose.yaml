@@ -1,0 +1,24 @@
+services:
+  tictactoe_backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: tictactoe_backend
+    networks:
+      - proxy
+    ports:
+      - "8080:8080"
+
+  tictactoe_frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: tictactoe_frontend
+    networks:
+      - proxy
+    ports:
+      - "8081:8081"
+
+networks:
+  proxy:
+    external: true
