@@ -8,7 +8,7 @@
 			<h2>Herausforderung</h2>
 		</template>
 
-		<p>{{ opponent.name }} fordert dich heraus!</p>
+		<p class="invitation">{{ opponent.name }} fordert dich heraus!</p>
 
 		<template #buttons>
 			<button @click="accept">
@@ -51,3 +51,12 @@ const reject = () => {
 	close()
 }
 </script>
+
+<style>
+
+.invitation {
+	text-align: center;
+	margin-bottom: 2em;
+}
+
+</style>

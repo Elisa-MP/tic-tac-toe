@@ -10,17 +10,30 @@ import GameScreen from './components/game-screen.vue';
 </script>
 
 <template>
-  <div class="background">
-    <h1>Tic Tac Toe</h1>
+  <div class="wrapper">
+    <h1 class="title">Tic Tac Toe</h1>
   
-    <LoginScreen v-if="screen === 'login'" />
-    <LobbyScreen v-else-if="screen === 'lobby'" />
-    <GameScreen v-else-if="screen === 'game'" />
+    <div class="inner-wrapper">
+      <LoginScreen v-if="screen === 'login'" />
+      <LobbyScreen v-else-if="screen === 'lobby'" />
+      <GameScreen v-else-if="screen === 'game'" />
+    </div>
   </div>
 </template>
 
 <style scoped>
 
+.title {
+  text-align: center;
+  border-bottom: 1px solid var(--accent);
+  max-width: 20em;
+  min-width: 10em;
+}
 
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
 </style>

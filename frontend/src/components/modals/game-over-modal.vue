@@ -37,8 +37,10 @@ const props = defineProps<{
 
 const leave = () => {
 	if(game.value) leaveGame(game.value.id)
-	$screen.set('lobby')
+	// $screen.set('lobby')
 	// TODO handle error
+  // TODO do something smarter with the buttons, maybe component
+
 }
 
 const message = computed(() => {

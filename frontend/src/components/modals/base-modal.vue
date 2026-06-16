@@ -77,14 +77,20 @@ const handleOverlayClick = () => {
 
 .close {
   position: absolute;
-  right: 3em;
-  top: 3em;
+  right: 2em;
+  top: 2em;
 }
 
 .header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
+	text-align: center;
+  border-bottom: 1px solid var(--accent);
+  margin-bottom: 2em;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 2em;
 }
 
 </style>

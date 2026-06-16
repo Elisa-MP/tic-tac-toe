@@ -1,13 +1,15 @@
 <template>
   <BaseModal
     :show="props.show"
+		:closable="false"
     @update:show="emit('update:show', $event)"
   >
     <template #header>
-      <h2>{{ player.name }} herausfordern ?</h2>
+      <h2 v-if="!invited">{{ player.name }} herausfordern ?</h2>
+      <h2 v-else>Warten auf {{ player.name }}!</h2>
     </template>
 
-    <template #buttons>
+    <template #buttons v-if="!invited">
       <button @click="invite">
         Einladen
       </button>
@@ -25,11 +27,14 @@
 import BaseModal from './base-modal.vue'
 import type { UserDO } from '../../../../types/shared'
 import { createGame } from '@/services/messages/create-game.ts';
+import { ref } from 'vue';
 
 const props = defineProps<{
   player: UserDO
   show: boolean
 }>()
+
+const invited = ref(false);
 
 const emit = defineEmits([
   'update:show'
@@ -37,6 +42,6 @@ const emit = defineEmits([
 
 const invite = () => {
   createGame(props.player.id)
-  emit("update:show", false)
+  invited.value = true;
 }
 </script>

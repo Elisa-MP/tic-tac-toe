@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { socket } from '../services/socket-service';
 import { setUsername } from '@/services/messages/set-username';
 
 const username = ref('');
@@ -12,10 +11,11 @@ const login = (e: SubmitEvent) => {
 }
 
 </script>
-
 <template>
+	<p class="login-text">Wähle einen Benutzernamen!</p>
 	<form @submit="login">
-		<input v-model="username" />
+
+		<input class="username" v-model="username" />
 
 		<button
 			type="submit"
@@ -24,3 +24,16 @@ const login = (e: SubmitEvent) => {
 		</button>
 	</form>
 </template>
+
+<style>
+
+.username {
+	height: 2em;
+	border-radius: 0.5em;
+}
+
+.login-text {
+	text-align: center;
+}
+
+</style>
