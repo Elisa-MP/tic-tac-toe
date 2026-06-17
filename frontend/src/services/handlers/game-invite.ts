@@ -16,7 +16,5 @@ export const gameInviteHandler = (msg: IGameInvite) => {
 	$game.set(game)
 	const id = $userId.get();
 	
-	const opponent = game.p1.id === id ? game.p2 : game.p1;
-
 	console.log('game invite', msg)
 }

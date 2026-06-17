@@ -1,4 +1,4 @@
-import type { UserDO, GameDO } from './shared';
+import type { UserDO, GameDO, Screen } from './shared';
 
 interface IMessage<Type, Payload> {
   id: string,
@@ -7,6 +7,7 @@ interface IMessage<Type, Payload> {
 }
 
 export enum IMessageType {
+	HELLO = 'hello',
 	SET_USERNAME = 'set-username',
 	ACCEPT_INVITE = 'accept-invite',
 	REJ_INVITE = 'rej-invite',
@@ -27,13 +28,21 @@ export enum IMessageType {
 // Client
 
 export type TClientMsg =
-	ISetUsername
+	Hello
+	| ISetUsername
 	| IAcceptInvite
 	| IRejectInvite
 	| ICreateGame
 	| IGameMove
 	| ILeaveGame
 ;
+
+export type Hello = IMessage<
+	IMessageType.HELLO,
+	{
+		connectionId?: string,
+	}
+>;
 
 export type ISetUsername = IMessage<
 	IMessageType.SET_USERNAME,
@@ -97,8 +106,12 @@ export type IWelcome = IMessage<
 	{
 		msg: string,
 		connectionId: string,
+		userId?: string,
+		targetScreen?: Screen,
+		game?: GameDO
 	}
 >;
+
 export type IACK = IMessage<
 	IMessageType.ACK,
 	{

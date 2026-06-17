@@ -6,6 +6,8 @@ import { $lobby } from "@/stores/lobby";
 export const oppLeftGameHandler = (msg: IOppLeftGame) => {
 	const { gameId } = msg.payload;
 	
+	if($game.value?.id !== gameId) return
+	
 	console.log('Opponent left game:', gameId);
 	
 	$game.set(null);

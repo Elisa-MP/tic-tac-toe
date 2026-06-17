@@ -1,4 +1,5 @@
 import type { TServerMsg } from "../../../types/protocol";
+import { hello } from "./messages/hello";
 import { handleServerMsg } from "./msg-handler";
 
 class SocketService implements SocketService {
@@ -11,6 +12,7 @@ class SocketService implements SocketService {
 
     this.ws.onopen = () => {
       console.log('connected')
+      hello();
     }
 
     this.ws.onclose = () => {

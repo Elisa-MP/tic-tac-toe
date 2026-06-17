@@ -16,16 +16,16 @@ const wss = new WebSocketServer({
 const engine = new Engine();
 
 const clients = backendState.clients;
+const users = backendState.users;
 
 engine.on('lobby-updated', payload => {
-  console.log(clients)
   clients.forEach(client => {
     client.send(genMsg({ id: crypto.randomUUID(), type: IMessageType.UPDATE_LOBBY, payload }));
   });
 });
 
 wss.on('connection', ws => {
-  welcome(ws);
+  // welcome(ws);
 
   ws.on('message', data => {
     const msg = JSON.parse(data.toString()) as TClientMsg;
@@ -39,12 +39,14 @@ wss.on('connection', ws => {
     }
 
     clients.delete(user.connectionId);
+    users.delete(ws);
 
-    setTimeout(() => {
+    user.setSelfdestruct(
+      setTimeout(() => {
       if (!clients.has(user!.connectionId)) {
         engine.removeUser(user!);
       }
-    }, 10000);
+    }, 10000));
   });
 
   ws.on('error', console.error);

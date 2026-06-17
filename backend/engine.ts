@@ -1,7 +1,7 @@
 import { EventEmitter } from "node:events";
 import { Game } from "./game";
 import { User } from "./user";
-import { UserDO } from "../types/shared";
+import { GameDO, UserDO } from "../types/shared";
 
 export class Engine extends EventEmitter {
   private users = new Map<string, User>();
@@ -21,6 +21,12 @@ export class Engine extends EventEmitter {
 
   getUserById(id: string): User | undefined {
     return this.users.get(id);
+  }
+
+  getUserByConnectionId(connectionId: string): User | undefined {
+    return [...this.users.values()].find(
+      user => user.connectionId === connectionId
+    );
   }
 
   getUserByName(name: string): User | undefined {
@@ -100,6 +106,16 @@ export class Engine extends EventEmitter {
     return this.games.get(gameId);
   }
 
+  findUserGame(user: User): GameDO | undefined {
+    for (const game of this.games.values()) {
+      if (game.p1.id === user.id || game.p2.id === user.id) {
+        return game.getGameDO();
+      }
+    }
+
+    return undefined;  
+  }
+
   getLobby(): UserDO[] {
     const l = [...this.users.values()]
       .filter((user) =>
@@ -111,11 +127,10 @@ export class Engine extends EventEmitter {
         name: user.name,
         status: user.status
       }));
-    console.log(l);
     return l;
   }
 
-  private updateLobby(): void {
+  updateLobby(): void {
     this.emit('lobby-updated', {
       lobby: this.getLobby()
     });

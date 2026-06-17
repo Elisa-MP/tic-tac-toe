@@ -8,8 +8,13 @@ import { acceptInviteHandler } from './handlers/accept-invite';
 import { rejectInviteHandler } from './handlers/reject-invite';
 import { leaveGameHandler } from './handlers/leave-game';
 import { gameMoveHandler } from './handlers/game-move';
+import { helloHandler } from './handlers/hello';
 
 export const handleClientMsg = (engine: Engine, msg: TClientMsg, ws: WebSocket) => {
+	if(msg.type === IMessageType.HELLO) {
+		helloHandler(engine, ws, msg);
+		return
+	}
 	if(msg.type === IMessageType.SET_USERNAME) {
 		setUsernameHandler(engine, ws, msg);
 		return

@@ -1,18 +1,32 @@
+import { $game } from "@/stores/game";
 import type { IWelcome } from "../../../../types/protocol";
-import { $username, $connectionId, $connected, $screen } from "../../stores/connection";
+import { $connectionId, $screen, $userId } from "../../stores/connection";
 
 export const welcomeHandler = (msg: IWelcome) => {
-	const { msg: message, connectionId } = msg.payload;
-	const storedConnectionId = localStorage.getItem('connectionId');
+	const { msg: message, connectionId, userId, targetScreen, game } = msg.payload;
 
-	console.log('Welcome message:', message);
+	console.log(message)
 
-	if (storedConnectionId) {
-		$connectionId.set(storedConnectionId);
-	} else if (connectionId) {
-		$connectionId.set(connectionId);
-		localStorage.setItem('connectionId', connectionId);
+	const storageConnectionId = localStorage.getItem('connectionId')
+
+	if(storageConnectionId && storageConnectionId === connectionId) {
+		$userId.set(userId!)
+
+		if(targetScreen === 'game' && game?.status === 'active') {
+			$game.set(game)
+			$screen.set(targetScreen)
+		} else {
+			$game.set(null)
+			$screen.set('lobby')
+		}
+		return
 	}
-	
-	$connected.set(true);
+
+	localStorage.setItem('connectionId', connectionId);
+
+	$connectionId.set(connectionId)
+	$screen.set('login')
+
+
+	// TODO: If !connected (nanostore speichern) show discconected message
 }

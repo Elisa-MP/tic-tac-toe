@@ -1,3 +1,5 @@
+export type Screen = 'login' | 'lobby' | 'game'
+
 export type UserStatus = 'active' | 'pending' | 'ingame';
 export type Marker = 'X' | 'O' | null;
 
