@@ -27,17 +27,15 @@ export const leaveGameHandler = (engine: Engine, ws: WebSocket, msg: ILeaveGame)
 	ack(ws, msg.id)
 
 	const opponentConnectionId = game.p1.id === currentUser?.id ? game.p2.getConnectionId() : game.p1.getConnectionId();
-	
+	console.log(opponentConnectionId)
 	const oppWs = backendState.clients.get(opponentConnectionId);
 	
 	if (!oppWs) {
 		rej(ws, msg.id, 'opponent-not-found');
 		return;
-		
 	}
 	
 	const opp = backendState.users.get(oppWs)
 	
-	if(opp?.status === 'active') return
 	oppLeftGame(oppWs, game);
 }

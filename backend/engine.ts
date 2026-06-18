@@ -85,7 +85,7 @@ export class Engine extends EventEmitter {
       game.status === 'active' ||
       game.status === 'pending'
     ) {
-      game.cancel();
+      game.cancel(game);
     }
 
     if (player.id === game.p1.id) {
@@ -108,12 +108,16 @@ export class Engine extends EventEmitter {
 
   findUserGame(user: User): GameDO | undefined {
     for (const game of this.games.values()) {
-      if (game.p1.id === user.id || game.p2.id === user.id) {
+      const isPlayer =
+        game.p1.id === user.id ||
+        game.p2.id === user.id;
+
+      if (game.status === 'active' && isPlayer) {
         return game.getGameDO();
       }
     }
 
-    return undefined;  
+    return undefined;
   }
 
   getLobby(): UserDO[] {

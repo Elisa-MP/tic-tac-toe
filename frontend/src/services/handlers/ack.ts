@@ -9,12 +9,12 @@ export const ackHandler = (msg: IACK) => {
 
 	console.log(`ACK for request ${reqId}:`, message, pending);
 
-	if(pending === 'set-username') {
+	if(pending === 'set-username' && userId) {
 		$screen.set('lobby');
-		$userId.set(userId || '');
+		$userId.set(userId);
 	}
 	if( pending === 'leave-game') {
-		$screen.set('lobby')
-		$game.set(null)
+		$screen.set('lobby');
+		$game.set(null);
 	}
 };

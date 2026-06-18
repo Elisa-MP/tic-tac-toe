@@ -20,8 +20,12 @@ const restoreClient = (ws: WebSocket, user: User, engine: Engine) => {
 
   if(game && game.status === 'active') {
     welcome(ws, user.connectionId, user.id, 'game', game)
+    engine.updateLobby()
+    return
   }
   
+  user.setStatus === 'active'
+
   welcome(ws, user.connectionId, user.id)
 
   engine.updateLobby()

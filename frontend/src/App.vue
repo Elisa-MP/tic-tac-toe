@@ -2,9 +2,10 @@
 import { useStore } from '@nanostores/vue';
 
 import LoginScreen from './components/login-screen.vue';
-import { $screen } from './stores/connection.ts';
+import { $connectionId, $screen } from './stores/connection.ts';
 import LobbyScreen from './components/lobby-screen.vue';
 import GameScreen from './components/game-screen.vue';
+import { $game } from './stores/game.ts';
 
   const screen = useStore($screen);
 </script>
