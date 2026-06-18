@@ -6,6 +6,7 @@ import { IMessageType, TClientMsg, type TServerMsg } from '../types/protocol';
 import { handleClientMsg } from './msg-handler';
 import { backendState } from './state';
 import { welcome } from './messages/welcome';
+import { oppLeftGame } from './messages/opp-left-game';
 
 const port = 8080;
 
@@ -25,7 +26,6 @@ engine.on('lobby-updated', payload => {
 });
 
 wss.on('connection', ws => {
-  // welcome(ws);
 
   ws.on('message', data => {
     const msg = JSON.parse(data.toString()) as TClientMsg;
@@ -33,10 +33,11 @@ wss.on('connection', ws => {
   });
 
   ws.on('close', () => {
-    const user = (ws as any).user as User | undefined;
+    const user = users.get(ws)
     if (!user) {
       return;
     }
+
 
     clients.delete(user.connectionId);
     users.delete(ws);
@@ -44,9 +45,22 @@ wss.on('connection', ws => {
     user.setSelfdestruct(
       setTimeout(() => {
       if (!clients.has(user!.connectionId)) {
+        const activeGame = engine.findUserGame(user)
+
+        if(activeGame) {
+          const game = engine.getGame(activeGame.id)
+
+          if(game) {
+            engine.cancelGame(game)
+            const opp = game.p1.id === user.id ? game.p2 : game.p1
+            const oppWs = clients.get(opp.connectionId)
+
+            if(oppWs) oppLeftGame(oppWs, game)
+          }
+        }
         engine.removeUser(user!);
       }
-    }, 10000));
+    }, 5000));
   });
 
   ws.on('error', console.error);

@@ -24,7 +24,7 @@ const restoreClient = (ws: WebSocket, user: User, engine: Engine) => {
     return
   }
   
-  user.setStatus === 'active'
+  user.setStatus('active')
 
   welcome(ws, user.connectionId, user.id)
 

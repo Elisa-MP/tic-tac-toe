@@ -13,7 +13,7 @@
 				<button
           v-if="props.closable"
 					class="close"
-					@click="close"
+					@click="closeModal"
 				>
 				X
 				</button>
@@ -47,12 +47,12 @@ const emit = defineEmits([
   'update:show'
 ])
 
-const close = () => {
+const closeModal = () => {
   emit('update:show', false)
 }
 
 const handleOverlayClick = () => {
-  if(props.closable) close()
+  if(props.closable) closeModal()
 }
 
 </script>

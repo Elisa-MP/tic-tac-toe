@@ -4,7 +4,7 @@
     v-if="game"
     :game="game"
   />
-  <div>
+  <div class="wrapper">
     <h2 class="title">{{ myturn ? 'Du bist dran!' : 'Genger am Zug!' }}</h2>
 
     <div class="board">
@@ -60,6 +60,12 @@ import { $screen } from '@/stores/connection.ts';
 
 <style>
 
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .title {
   text-align: center;
 }
@@ -84,7 +90,7 @@ import { $screen } from '@/stores/connection.ts';
   font-size: 2em;
 }
 
-.field.disabled {
+.field .disabled {
   cursor: not-allowed;
 }
 

@@ -10,7 +10,7 @@
     :show="true"
     :game="game"
   />
-  <div>
+  <div class="outer">
     <p v-if="lobby.length > 1">Wähle einen Gegner aus um zu spielen!</p>
     <p v-else>Warte auf weitere Spieler!</p>
 
@@ -64,10 +64,18 @@ const invitePlayer = (player: UserDO) => {
 
 <style>
 
-.lobby {
+.outer {
   display: flex;
   flex-direction: column;
+  align-items: center;
+}
+
+.lobby {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto;
   gap: 1em;
+  width: 100%;
 }
 
 .player {
@@ -76,14 +84,16 @@ const invitePlayer = (player: UserDO) => {
   justify-content: center;
   border: 1px solid var(--accent);
   border-radius: 0.5em;
-  padding: 0.5em 1em;
+  padding: 0.7em 1em;
   cursor: pointer;
   text-align: center;
-  min-height: 2em;
+  height: 3em;
+  justify-self: stretch;
 }
 
 .player:hover {
   background-color: var(--dark);
+  cursor: pointer;
 }
 
 .me {
@@ -92,15 +102,23 @@ const invitePlayer = (player: UserDO) => {
 }
 
 .me:hover {
-  background-color: var(--background);
+  background-color: var(--accent);
+  cursor: default;
 }
 
 .inactive {
-  opacity: 0.5;
+  cursor: default;
 }
 
 .player-name {
   margin: 0
+}
+
+@media (max-width: 500px) {
+  .lobby {
+    display: flex;
+    flex-direction: column;
+  }
 }
 
 </style>

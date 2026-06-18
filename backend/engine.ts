@@ -85,7 +85,7 @@ export class Engine extends EventEmitter {
       game.status === 'active' ||
       game.status === 'pending'
     ) {
-      game.cancel(game);
+      game.cancel();
     }
 
     if (player.id === game.p1.id) {

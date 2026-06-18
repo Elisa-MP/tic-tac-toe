@@ -43,12 +43,13 @@ const emit = defineEmits([
 
 const accept = () => {
 	acceptInvite(props.game)
-	close()
+  emit('update:show', false)
+
 }
 
 const reject = () => {
 	rejectInvite(props.game)
-	close()
+  emit('update:show', false)
 }
 </script>
 
